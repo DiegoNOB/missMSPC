@@ -1,0 +1,27 @@
+Package: missMSPC
+Title: Herramientas Gráficas para Aplicar MSPC con Missing Data
+Version: 0.0.0.9000
+Authors@R: 
+    c(person(given = "Julia Inés",
+             family = "Fernández",
+             role = c("aut"),
+             email = "juliai.fernandezt@gmail.com"),
+      person(given = "Diego",
+             family = "Marfetán Molina",
+             role = c("aut", "cre"),
+             email = "diego.marfetan@unr.edu.ar"))
+Description: El paquete missMSPC permite construir los gráficos de control multivariados T2 y SPE a partir de un modelo PCA en Fase II en situaciones donse se cuenta tanto con datos completos o incompletos. Ante la presencia de valores faltantes, se permite realizar la imputación a través de alguno de los métodos propuestos (KDR/CMR o bien TSR).
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Imports: 
+    ggplot2,
+    stringr
+Suggests: 
+    rmarkdown,
+    knitr
+VignetteBuilder: knitr
+Depends: 
+    R (>= 2.10)
