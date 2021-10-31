@@ -1,0 +1,21 @@
+citHeader("To cite missMSPC in publications use:")
+
+citEntry(
+  entry    = "misc",
+  title    = "missMSPC: Herramientas Gráficas para Aplicar MSPC con Missing Data",
+  author   = c(person(given = "Julia Inés",
+             family = "Fernández",
+             role = c("aut"),
+             email = "juliai.fernandezt@gmail.com"),
+      person(given = "Diego",
+             family = "Marfetán Molina",
+             role = c("aut", "cre"),
+             email = "diego.marfetan@unr.edu.ar")),
+  year     = 2021,
+  url      = "https://github.com/DiegoNOB/missMSPC",
+  textVersion = paste(
+    "Julia Fernández & Diego Marfetán Molina (2021).",
+    "missMSPC: Herramientas Gráficas para Aplicar MSPC con Missing Data.",
+    "URL https://github.com/DiegoNOB/missMSPC"
+  )
+)

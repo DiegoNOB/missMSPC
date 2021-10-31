@@ -2,30 +2,59 @@
 % Please edit documentation in R/score_imp.R
 \name{score_imp}
 \alias{score_imp}
-\title{Imputación de Scores CMR y TSR}
+\title{PCA Score Calculation}
 \usage{
-score_imp(datos, pesos, autov, A, metodo)
+score_imp(data1 = NULL, data2, A, method = NULL, weights = NULL, eigen = NULL)
 }
 \arguments{
-\item{datos}{vector o matriz de datos numericos que pueden tener missing values}
+\item{data1}{an optional argument: data frame with Phase I data.
+Cannot contain missing values.}
 
-\item{pesos}{matriz de pesos que sale del PCA}
+\item{data2}{data frame with Phase II data. May contain missing values.}
 
-\item{autov}{autovalores}
+\item{A}{number of principal components to use.}
 
-\item{A}{cantidad de componentes elegidas}
+\item{method}{method to be used for imputation of missing values, if there are any.
+Currently supported values are "CMR" and "TSR".}
 
-\item{metodo}{CMR o TSR}
+\item{weights}{an optional argument: weight matrix from Principal Component Analysis,
+computed using standardized Phase I data.}
+
+\item{eigen}{an optional argument: numeric vector with eigenvalues
+from Principal Component Analysis, computed using standardized Phase I data.}
 }
 \value{
-devuelve una lista con scores y errores calculados
+\code{score_imp} returns a list containing the following components:
+\describe{
+\item{Scores}{scores for Phase II data for the first \code{A} principal components}
+\item{Residuals}{residuals from the model based on the first A principal components}
+\item{VarScores}{eigenvalues from PCA using standardized Phase I data}
+}
 }
 \description{
-Esta función calcula scores usando el metodo CMR (KDR) o TSR
+This function calculates the scores and residuals for the \eqn{T^2} control chart
+of Principal Components. For Phase II data, the scores of observations with missing values
+are estimated using either CMR or TSR methods.
 }
 \details{
-agregar detalles
+For Phase I usage, \code{data2} should be equal to \code{data1}.
+Phase II data is standardized using means and variances from Phase I data.
+If Phase I data is not provided, \code{score_imp} expects \code{data2} to be standardized.
+In this case, user should provide both \code{weights} and \code{eigen}.
 }
 \examples{
+#Score calculation
+score_imp(
+  data1 = fruits1,
+  data2 = fruits2,
+  A = 4
+  )
 
+#Score imputation with CMR method
+score_imp(
+  data1 = fruits1,
+  data2 = fruits2na,
+  A = 4,
+  method = "CMR"
+  )
 }

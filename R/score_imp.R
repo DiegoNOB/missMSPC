@@ -1,64 +1,114 @@
-#' Imputación de Scores CMR y TSR
+#' PCA Score Calculation
 #'
-#' Esta función calcula scores usando el metodo CMR (KDR) o TSR
-#' @param datos vector o matriz de datos numericos que pueden tener missing values
-#' @param pesos matriz de pesos que sale del PCA
-#' @param autov autovalores
-#' @param A cantidad de componentes elegidas
-#' @param metodo CMR o TSR
+#' This function calculates the scores and residuals for the \eqn{T^2} control chart
+#' of Principal Components. For Phase II data, the scores of observations with missing values
+#' are estimated using either CMR or TSR methods.
+#' @param data1 an optional argument: data frame with Phase I data.
+#' Cannot contain missing values.
+#' @param data2 data frame with Phase II data. May contain missing values.
+#' @param A number of principal components to use.
+#' @param method method to be used for imputation of missing values, if there are any.
+#' Currently supported values are "CMR" and "TSR".
+#' @param weights an optional argument: weight matrix from Principal Component Analysis,
+#' computed using standardized Phase I data.
+#' @param eigen an optional argument: numeric vector with eigenvalues
+#' from Principal Component Analysis, computed using standardized Phase I data.
 #'
-#' @return devuelve una lista con scores y errores calculados
-#' @details agregar detalles
+#' @return `score_imp` returns a list containing the following components:
+#' \describe{
+#'   \item{Scores}{scores for Phase II data for the first `A` principal components}
+#'   \item{Residuals}{residuals from the model based on the first A principal components}
+#'   \item{VarScores}{eigenvalues from PCA using standardized Phase I data}
+#' }
+#' @details For Phase I usage, `data2` should be equal to `data1`.
+#' Phase II data is standardized using means and variances from Phase I data.
+#' If Phase I data is not provided, `score_imp` expects `data2` to be standardized.
+#' In this case, user should provide both `weights` and `eigen`.
 #' @export
 #' @examples
+#' #Score calculation
+#' score_imp(
+#'   data1 = fruits1,
+#'   data2 = fruits2,
+#'   A = 4
+#'   )
 #'
-score_imp <- function(datos, pesos, autov, A, metodo) {
+#' #Score imputation with CMR method
+#' score_imp(
+#'   data1 = fruits1,
+#'   data2 = fruits2na,
+#'   A = 4,
+#'   method = "CMR"
+#'   )
+score_imp <- function(data1 = NULL, data2, A, method = NULL, weights = NULL, eigen = NULL) {
 
-  if (!(metodo %in% c("CMR", "TSR"))) {
-    stop(stringr::str_wrap("Los únicos métodos aceptados son CMR o TSR.", width = 75))
+  if (!is.null(data1)) {
+    data2_est <- scale(
+      data2,
+      center = colMeans(data1),
+      scale = sqrt(diag(var(data1)))
+      )
   }
 
-  #supongo que la dimension sera nula solo si el objeto es un vector
-  #las clases mas comunes (matrix, data.frame, tibble) tienen dimension
-  #chequear si otras clases similares (no se cuales) tienen dim nula o no
-  if (is.null(dim(datos))) {datos <- matrix(datos, nrow = 1)} #Convierto vector a matriz
-  datos <- as.matrix(datos) #para el caso data.frame o tibble
+  if (is.null(data1) & (is.null(weights) | is.null(eigen))) {
+    stop("If Phase I data is not provided, both weights and eigen are necessary")
+  }
+
+  if (is.null(data1) & !is.null(weights) & !is.null(eigen)) {
+    message("Phase II data is assumed to be standardized using means and variances from Phase I data.")
+  }
+
+  if (is.null(weights) | is.null(eigen)) {
+    data1_est <- scale(data1)
+    acp <- stats::princomp(data1_est)
+    eigen <- acp$sdev^2
+    weights <- matrix(data = as.numeric(acp$loadings), ncol = length(eigen))
+  }
 
   #Cantidad de variables y chequeos
-  p <- ncol(datos)
+  p <- ncol(data2)
 
-  if (nrow(pesos) != p) {stop(stringr::str_wrap(paste0("La cantidad de variables en la matriz de pesos (",
-                                              nrow(pesos), ") no coincide con la cantidad de variables del conjunto de datos (",
-                                              p, ")."), width = 75))}
+  if (nrow(weights) != p) {
+    stop(paste0("The number of variables in the weights matrix (",
+                nrow(weights),
+                ") is different from the number of columns in Phase II data (",
+                p, ")."))}
 
-  if (ncol(pesos) < A) {stop(stringr::str_wrap(paste0("La cantidad de componentes en la matriz de pesos (",
-                                             ncol(pesos), ") es menor a la cantidad de componentes elegidas (", A, ")."), width = 75))}
+  if (ncol(weights) < A) {
+    stop(paste0("The number of components in the weights matrix (",
+                  ncol(weights),
+                 ") is less than the number of selected components (", A, ")."))
+         }
 
-  if (length(autov) < A) {stop(stringr::str_wrap(paste0("La cantidad de autovalores (", length(autov),
-                                               ") es menor a la cantidad de componentes elegidas (", A, ")."), width = 75))}
+  if (length(eigen) < A) {
+    stop(paste0("The number of eigenvalues (",
+                length(eigen),
+                ") is less than the number of selected components (", A, ")."))
+         }
 
-  TITA <- diag(autov) #Matriz de covariancia de las componentes
-  P1A <- as.matrix(pesos[, 1:A]) #Pesos para las A primeras componentes
+  TITA <- diag(eigen) #Matriz de covariancia de las componentes
+  P1A <- as.matrix(weights[, 1:A]) #weights para las A primeras componentes
 
   escores <- NULL
   errores <- NULL
 
-  for (j in 1:nrow(datos)) {
+  for (j in 1:nrow(data2)) {
 
-    z <- datos[j, ]
+    z <- as.matrix(data2[j, ])
     faltan <- which(is.na(z)) #positions of missing data
     cantMV <- length(faltan) #cantidad de missing values
 
     #Escenario 1: no hay datos faltantes, los scores se calculan con la formula usual
     if (cantMV == 0) {
       tauhat <- t(z %*% P1A)
-      residuo <- (diag(p) - P1A %*% t(P1A)) %*% z
+      residuo <- (diag(p) - P1A %*% t(P1A)) %*% t(z)
     }
 
     #Escenario 2: todas las variables tienen datos faltantes, imposible estimar el score
     else if (cantMV == p) {
-      warning(stringr::str_wrap(paste0("La totalidad de las variables presentan valores faltantes
-           para la observación (fila) ", j, "."), width = 75))
+      warning(paste0("Missing values detected in all variables. ",
+                     "Score imputation methods cannot be implemented in this scenario.",
+                     "Check row ", j, "."))
       tauhat <- rep(NA, A)
       residuo <- rep(NA, p)
     }
@@ -66,12 +116,18 @@ score_imp <- function(datos, pesos, autov, A, metodo) {
     #Escenario 3: solo algunas variables tienen datos faltantes, aplico CMR o TSR
     else {
 
-      zstar <- z[-faltan] #z*: vector of observed values
-      Pstar <- matrix(pesos[-faltan, ], ncol = p) #P*: weight matrix of obs variables
-      Pstar1A <- matrix(Pstar[, 1:A], ncol = A) #P*1:A: pesos de A PCs of obs variables
-      Phash <- matrix(pesos[faltan, ], ncol = p)
+      if (is.null(method)) {stop("Choose method CMR or TSR.")}
 
-      if (metodo == "CMR") {
+      if (!(method %in% c("CMR", "TSR"))) {
+        stop("Choose method CMR or TSR.")
+      }
+
+      zstar <- z[-faltan] #z*: vector of observed values
+      Pstar <- matrix(weights[-faltan, ], ncol = p) #P*: weight matrix of obs variables
+      Pstar1A <- matrix(Pstar[, 1:A], ncol = A) #P*1:A: weights de A PCs of obs variables
+      Phash <- matrix(weights[faltan, ], ncol = p)
+
+      if (method == "CMR") {
 
         #Scores Estimados
         inversa <- solve(Pstar %*% TITA %*% t(Pstar))
@@ -82,7 +138,7 @@ score_imp <- function(datos, pesos, autov, A, metodo) {
 
       }
 
-      else if (metodo == "TSR") {
+      else if (method == "TSR") {
 
         #Scores Estimados
         inversa <- solve(t(Pstar1A) %*% Pstar %*% TITA %*% t(Pstar) %*% Pstar1A)
@@ -103,5 +159,5 @@ score_imp <- function(datos, pesos, autov, A, metodo) {
     errores <- rbind(errores, t(residuo))
   }
 
-  return(list(Scores = escores, Errores = errores))
+  return(list(Scores = escores, Residuals = errores, VarScores = eigen))
 }
