@@ -3,32 +3,39 @@
 \docType{data}
 \name{fruits1}
 \alias{fruits1}
-\title{Concentración de 11 aminoácidos en jugo de fruta puro}
+\title{Aminoacid concentration in fruit juice samples}
 \format{
 A data frame with 36 rows and 11 variables:
 
-\strong{uuu}: hola
-
 \describe{
 
-\item{LYS}{lisina}
-\item{ARG}{arginina}
-\item{ASP}{ácido aspártico}
-\item{SER}{serina}
-\item{GLU}{ácido glutámico}
-\item{PRO}{prolina}
-\item{GLY}{glicina}
-\item{ALA}{alanina}
-\item{VAL}{valina}
-\item{PHA}{fenilalanina}
-\item{GABA}{ácido gamma-aminobutírico}
+\item{LYS}{lysine}
+\item{ARG}{arginine}
+\item{ASP}{aspartic acid}
+\item{SER}{serine}
+\item{GLU}{glutamine acid}
+\item{PRO}{proline}
+\item{GLY}{glycine}
+\item{ALA}{alanine}
+\item{VAL}{valine}
+\item{PHA}{phenyl alanine}
+\item{GABA}{gamma-amino butric acid}
 }
 }
 \usage{
 fruits1
 }
 \description{
-Conjunto de datos simulado. Las concentraciones se asumen
-medidas en microgramos por volumen estándar.
+Simulated data set of Phase I samples of pure fruit juice.
+Original concentrations are assumed to be measured in \eqn{\mu}g per standard volume.
+Variables are standardized.
+}
+\references{
+Fuchs, S. & Kenett, R. S. (1998).
+"Multivariate quality control: theory and applications".
+Chapman and Hall/CRC.
+}
+\seealso{
+\code{\link[=fruits2]{fruits2()}}, \code{\link[=fruits2na]{fruits2na()}}
 }
 \keyword{datasets}

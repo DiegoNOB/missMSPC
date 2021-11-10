@@ -14,12 +14,20 @@
 #'   \item{Plot}{ggplot object with \eqn{T^2} Control Chart of PCs}
 #'   \item{poc}{Proportion of out-of-control samples}
 #'   \item{out}{ID of out-of-control samples}
-#'   \item{UCL}{value of the Upper Control Limit}
+#'   \item{UCL}{Value of the Upper Control Limit}
 #' }
 #'
 #' @details The computation of the Upper Control Limit (UCL)
 #' depends on the `phase` argument. The chart is implemented for samples
 #' of size 1.
+#' @references MacGregor, J. F., & Kourti, T. (1995).
+#' "Statistical process control of multivariate processes."
+#' Control engineering practice, 3(3), 403-414.
+#'
+#' Wold, S., Geladi, P., Esbensen, K., & Ohman, J. (1987).
+#' "Multi‐way principal components‐and PLS‐analysis"
+#' Journal of chemometrics, 1(1), 41-56.
+#'
 #' @export
 #' @seealso [score_imp()]
 #' @examples
@@ -61,11 +69,11 @@ t2.chart <- function(scores, alpha = 0.005, phase = 2, m) {
   y <- data.frame(orden = 1:n, t2 = salida, control = salida < UCL)
 
   graf <- ggplot2::ggplot(data = y) +
-    ggplot2::aes(x = orden, y = t2, col = control) +
+    ggplot2::aes(x = orden, y = t2) +
     ggplot2::geom_line(size = 1) +
-    ggplot2::geom_point(size = 2) +
+    ggplot2::geom_point(ggplot2::aes(col = control), size = 2) +
     ggplot2::geom_hline(yintercept = UCL, col = "blue", size = 1.2, linetype = "twodash") +
-    ggplot2::geom_text(ggplot2::aes(x = 1, y = UCL*1.1, label = "UCL")) +
+    ggplot2::geom_text(ggplot2::aes(x = 1, y = UCL*1.05, label = "UCL")) +
     ggplot2::scale_color_manual(breaks = c(FALSE, TRUE),
                                 values = c("red", "black")) +
     ggplot2::ggtitle(expression(paste("T"^"2", " Control Chart"))) +

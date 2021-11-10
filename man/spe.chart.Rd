@@ -39,6 +39,15 @@ scores <- score_imp(
   )
 spe.chart(scores = scores, alpha = 0.005)
 }
+\references{
+Jackson, J. E., & Mudholkar, G. S. (1979).
+"Control Procedures for Residuals Associated with Principal Component Analysis".
+Technometrics, 21(3), 341-349. \url{https://doi.org/10.2307/1267757}
+
+MacGregor, J. F., & Kourti, T. (1995).
+"Statistical process control of multivariate processes."
+Control engineering practice, 3(3), 403-414.
+}
 \seealso{
 \code{\link[=score_imp]{score_imp()}}
 }

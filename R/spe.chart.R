@@ -16,6 +16,14 @@
 #' }
 #' @details The calculation of the Upper Control Limit is based on Jackson & Mudholkar (1979).
 #' @export
+#' @references Jackson, J. E., & Mudholkar, G. S. (1979).
+#' "Control Procedures for Residuals Associated with Principal Component Analysis".
+#' Technometrics, 21(3), 341-349. <https://doi.org/10.2307/1267757>
+#'
+#' MacGregor, J. F., & Kourti, T. (1995).
+#' "Statistical process control of multivariate processes."
+#' Control engineering practice, 3(3), 403-414.
+#'
 #' @seealso [score_imp()]
 #' @examples
 #' #Score imputation with CMR method
@@ -48,11 +56,11 @@ spe.chart <- function(scores, alpha = 0.005) {
   y <- data.frame(orden = 1:n, spe = SPE, control = SPE < UCL)
 
   graf <- ggplot2::ggplot(data = y) +
-    ggplot2::aes(x = orden, y = spe, col = control) +
+    ggplot2::aes(x = orden, y = spe) +
     ggplot2::geom_line(size = 1) +
-    ggplot2::geom_point(size = 2) +
+    ggplot2::geom_point(ggplot2::aes(col = control), size = 2) +
     ggplot2::geom_hline(yintercept = UCL, col = "blue", size = 1.2, linetype = "twodash") +
-    ggplot2::geom_text(ggplot2::aes(x = 1, y = UCL*1.1, label = "UCL")) +
+    ggplot2::geom_text(ggplot2::aes(x = 1, y = UCL*1.05, label = "UCL")) +
     ggplot2::scale_color_manual(breaks = c(FALSE, TRUE),
                                 values = c("red", "black")) +
     ggplot2::ggtitle("SPE Control Chart") +

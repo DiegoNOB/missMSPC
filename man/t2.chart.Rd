@@ -46,6 +46,15 @@ scores <- score_imp(
 #Phase I data has 36 observatios
 t2.chart(scores = scores, alpha = 0.005, phase = 2, m = 36)
 }
+\references{
+MacGregor, J. F., & Kourti, T. (1995).
+"Statistical process control of multivariate processes."
+Control engineering practice, 3(3), 403-414.
+
+Wold, S., Geladi, P., Esbensen, K., & Ohman, J. (1987).
+"Multi‐way principal components‐and PLS‐analysis"
+Journal of chemometrics, 1(1), 41-56.
+}
 \seealso{
 \code{\link[=score_imp]{score_imp()}}
 }

@@ -1,5 +1,5 @@
 Package: missMSPC
-Title: Herramientas Gráficas para Aplicar MSPC con Missing Data
+Title: Graphical Tools for Multivariate Statistical Process Control (MSPC) with Missing Data
 Version: 0.0.0.9000
 Authors@R: 
     c(person(given = "Julia Inés",
@@ -10,7 +10,7 @@ Authors@R:
              family = "Marfetán Molina",
              role = c("aut", "cre"),
              email = "diego.marfetan@unr.edu.ar"))
-Description: El paquete missMSPC permite construir los gráficos de control multivariados T2 y SPE a partir de un modelo PCA en Fase II en situaciones donse se cuenta tanto con datos completos o incompletos. Ante la presencia de valores faltantes, se permite realizar la imputación a través de alguno de los métodos propuestos (KDR/CMR o bien TSR).
+Description: The missMSPC package implements Hotelling’s T2 chart of principal components and Squared Prediction Error (SPE) control chart for phases I and II. The estimation of scores for observations with missing data is performed using CMR and TSR methods.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

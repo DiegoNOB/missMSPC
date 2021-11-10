@@ -41,6 +41,9 @@ For Phase I usage, \code{data2} should be equal to \code{data1}.
 Phase II data is standardized using means and variances from Phase I data.
 If Phase I data is not provided, \code{score_imp} expects \code{data2} to be standardized.
 In this case, user should provide both \code{weights} and \code{eigen}.
+
+When phase I data is available and scores are estimated through the TSR method,
+problems arising from matrix singularity are dealt with Ridge regression.
 }
 \examples{
 #Score calculation
@@ -57,4 +60,19 @@ score_imp(
   A = 4,
   method = "CMR"
   )
+}
+\references{
+Arteaga, F., & Ferrer, A. (2002).
+"Dealing with Missing Data in MSPC: Several Methods, Different Interpretations, Some Examples".
+Journal of Chemometrics 16 (810): 408-18. \url{https://doi.org/10.1002/cem.750}
+
+Fernández, J. I.; Pagura, J. A. & Quaglino, M. B. (2021).
+"Assessment of the effect of imputation of missing values on the performance of Phase II multivariate control charts".
+Quality and Reliability Engineering International, 37(4), 1664-1677.
+\url{https://doi.org/10.1002/qre.2819}
+
+Nelson, P. R. C.; Taylor, P. A. & MacGregor, J. F. (1996).
+"Missing Data Methods in PCA and PLS: Score Calculations with Incomplete Observations".
+Chemometrics and Intelligent Laboratory Systems 35 (1): 45-65.
+\url{https://doi.org/https://doi.org/10.1016/S0169-7439(96)00007-X}
 }
