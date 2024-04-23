@@ -22,7 +22,7 @@ Defaults to 0.005.}
 \item{Plot}{ggplot object with \eqn{T^2} Control Chart of PCs}
 \item{poc}{Proportion of out-of-control samples}
 \item{out}{ID of out-of-control samples}
-\item{UCL}{value of the Upper Control Limit}
+\item{UCL}{Value of the Upper Control Limit}
 }
 }
 \description{

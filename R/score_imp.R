@@ -64,7 +64,7 @@ score_imp <- function(data1 = NULL, data2, A, method = NULL, weights = NULL, eig
     data2_est <- scale(
       data2,
       center = colMeans(data1),
-      scale = sqrt(diag(var(data1)))
+      scale = sqrt(diag(stats::var(data1)))
       )
   }
 
@@ -176,7 +176,7 @@ score_imp <- function(data1 = NULL, data2, A, method = NULL, weights = NULL, eig
                                alpha = 0, intercept = FALSE)
 
           Lambda <- valcruz$lambda.min
-          coeficientes <- coef(Ridge, s = Lambda)
+          coeficientes <- stats::coef(Ridge, s = Lambda)
           Bhat <- as.matrix(do.call(cbind, coeficientes))[-1,]
           tauhat <- Bhat %*% t(Pstar1A) %*% zstar
 

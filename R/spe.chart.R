@@ -44,7 +44,7 @@ spe.chart <- function(scores, alpha = 0.005) {
   tita2 <- sum(lambdas^2)
   tita3 <- sum(lambdas^3)
   h0 <- 1 - (2*tita1*tita3) / (3*tita2*tita2)
-  zalpha <- qnorm(1-alpha)
+  zalpha <- stats::qnorm(1-alpha)
 
   UCL1 <- zalpha * sqrt(2 * tita2 * h0^2)
   UCL2 <- tita2 * h0 * (h0 - 1) / tita1^2
@@ -54,13 +54,14 @@ spe.chart <- function(scores, alpha = 0.005) {
   n <- nrow(x)
   SPE <- apply(x, 1, FUN = function(x) {sum(x^2)})
   y <- data.frame(orden = 1:n, spe = SPE, control = SPE < UCL)
+  data_texto <- data.frame(x = 1, y = UCL*1.05, label = "UCL")
 
   graf <- ggplot2::ggplot(data = y) +
     ggplot2::aes(x = orden, y = spe) +
     ggplot2::geom_line(size = 1) +
     ggplot2::geom_point(ggplot2::aes(col = control), size = 2) +
-    ggplot2::geom_hline(yintercept = UCL, col = "blue", size = 1.2, linetype = "twodash") +
-    ggplot2::geom_text(ggplot2::aes(x = 1, y = UCL*1.05, label = "UCL")) +
+    ggplot2::geom_hline(yintercept = UCL, col = "blue", linewidth = 1.2, linetype = "twodash") +
+    ggplot2::geom_text(data = data_texto, ggplot2::aes(x = x, y = y, label = label), fontface = "bold") +
     ggplot2::scale_color_manual(breaks = c(FALSE, TRUE),
                                 values = c("red", "black")) +
     ggplot2::ggtitle("SPE Control Chart") +

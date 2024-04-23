@@ -48,9 +48,9 @@ t2.chart <- function(scores, alpha = 0.005, phase = 2, m) {
 
   #UPPER CONTROL LIMIT
   if (phase == 1) {
-    UCL <- qbeta(1-alpha, A/2, (n-A-1)/2)*(n-1)^2/n
+    UCL <- stats::qbeta(1 - alpha, A/2, (n-A-1)/2)*(n-1)^2/n
   } else if (phase == 2) {
-    UCL <- qf(1-alpha, df1 = A, df2 = m-A) * A * (m+1) * (m-1) / (m * (m-A))
+    UCL <- stats::qf(1 - alpha, df1 = A, df2 = m-A) * A * (m+1) * (m-1) / (m * (m-A))
   } else {
     stop("phase argument can take values 1 or 2")
   }
@@ -67,13 +67,14 @@ t2.chart <- function(scores, alpha = 0.005, phase = 2, m) {
   }
 
   y <- data.frame(orden = 1:n, t2 = salida, control = salida < UCL)
+  data_texto <- data.frame(x = 1, y = UCL*1.05, label = "UCL")
 
   graf <- ggplot2::ggplot(data = y) +
     ggplot2::aes(x = orden, y = t2) +
     ggplot2::geom_line(size = 1) +
     ggplot2::geom_point(ggplot2::aes(col = control), size = 2) +
-    ggplot2::geom_hline(yintercept = UCL, col = "blue", size = 1.2, linetype = "twodash") +
-    ggplot2::geom_text(ggplot2::aes(x = 1, y = UCL*1.05, label = "UCL")) +
+    ggplot2::geom_hline(yintercept = UCL, col = "blue", linewidth = 1.2, linetype = "twodash") +
+    ggplot2::geom_text(data = data_texto, ggplot2::aes(x = x, y = y, label = label), fontface = "bold") +
     ggplot2::scale_color_manual(breaks = c(FALSE, TRUE),
                                 values = c("red", "black")) +
     ggplot2::ggtitle(expression(paste("T"^"2", " Control Chart"))) +
