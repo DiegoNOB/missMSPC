@@ -61,11 +61,13 @@
 score_imp <- function(data1 = NULL, data2, A, method = NULL, weights = NULL, eigen = NULL) {
 
   if (!is.null(data1)) {
-    data2_est <- scale(
-      data2,
-      center = colMeans(data1),
-      scale = sqrt(diag(stats::var(data1)))
+    data2 <- as.data.frame(
+      scale(
+        data2,
+        center = colMeans(data1),
+        scale = sqrt(diag(stats::var(data1)))
       )
+    )
   }
 
   if (is.null(data1) & (is.null(weights) | is.null(eigen))) {
