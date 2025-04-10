@@ -5,24 +5,26 @@ Authors@R:
     c(person(given = "Julia Inés",
              family = "Fernández",
              role = c("aut"),
-             email = "juliai.fernandezt@gmail.com"),
+             email = "julia.fernandez@fcecon.unr.edu.ar"),
       person(given = "Diego",
              family = "Marfetán Molina",
              role = c("aut", "cre"),
-             email = "diego.marfetan@unr.edu.ar"))
+             email = "diego.marfetan@fcecon.unr.edu.ar",
+             comment = c(ORCID = "0000-0003-4638-0902")))
 Description: The missMSPC package implements Hotelling’s T2 chart of principal components and Squared Prediction Error (SPE) control chart for phases I and II. The estimation of scores for observations with missing data is performed using CMR and TSR methods.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Imports: 
     ggplot2,
     glmnet,
+    purrr,
+    rlang,
     stats
 Suggests: 
     rmarkdown,
     knitr
-VignetteBuilder: knitr
 Depends: 
     R (>= 2.10)

@@ -3,6 +3,7 @@
 #' This function plots the SPE Control Chart.
 #' It also returns the proportion of out-of-control samples and their position,
 #' along with the value of the computed Upper Control Limit.
+#'
 #' @param scores output from `score_imp()` function.
 #' @param alpha significance level used for computing the Upper Control Limit (UCL).
 #' Defaults to 0.005.
@@ -13,6 +14,7 @@
 #'   \item{poc}{Proportion of out-of-control samples}
 #'   \item{out}{ID of out-of-control samples}
 #'   \item{UCL}{value of the Upper Control Limit}
+#'   \item{SPE}{values of the SPE statistic}
 #' }
 #' @details The calculation of the Upper Control Limit is based on Jackson & Mudholkar (1979).
 #' @export
@@ -25,6 +27,7 @@
 #' Control engineering practice, 3(3), 403-414.
 #'
 #' @seealso [score_imp()]
+#' @importFrom rlang .data
 #' @examples
 #' #Score imputation with CMR method
 #' scores <- score_imp(
@@ -57,11 +60,11 @@ spe.chart <- function(scores, alpha = 0.005) {
   data_texto <- data.frame(x = 1, y = UCL*1.05, label = "UCL")
 
   graf <- ggplot2::ggplot(data = y) +
-    ggplot2::aes(x = orden, y = spe) +
-    ggplot2::geom_line(size = 1) +
-    ggplot2::geom_point(ggplot2::aes(col = control), size = 2) +
+    ggplot2::aes(x = .data$orden, y = .data$spe) +
+    ggplot2::geom_line(linewidth = 1) +
+    ggplot2::geom_point(ggplot2::aes(col = .data$control), size = 2) +
     ggplot2::geom_hline(yintercept = UCL, col = "blue", linewidth = 1.2, linetype = "twodash") +
-    ggplot2::geom_text(data = data_texto, ggplot2::aes(x = x, y = y, label = label), fontface = "bold") +
+    ggplot2::geom_text(data = data_texto, ggplot2::aes(x = x, y = y, label = .data$label), fontface = "bold") +
     ggplot2::scale_color_manual(breaks = c(FALSE, TRUE),
                                 values = c("red", "black")) +
     ggplot2::ggtitle("SPE Control Chart") +
@@ -78,5 +81,6 @@ spe.chart <- function(scores, alpha = 0.005) {
   obsfc <- which(!y$control) #ID de obs fuera de control
   if (length(obsfc) == 0) {obsfc <- NULL}
 
-  return(list(Plot = graf, poc = pfc, out = obsfc, UCL = UCL))
+  list(Plot = graf, poc = pfc, out = obsfc, UCL = UCL, SPE = y$spe)
+
 }

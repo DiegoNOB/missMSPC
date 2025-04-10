@@ -3,6 +3,7 @@
 #' This function calculates the scores and residuals for the \eqn{T^2} control chart
 #' of Principal Components. For Phase II data, the scores of observations with missing values
 #' are estimated using either CMR or TSR methods.
+#'
 #' @param data1 an optional argument: data frame with Phase I data.
 #' Cannot contain missing values.
 #' @param data2 data frame with Phase II data. May contain missing values.
@@ -19,6 +20,7 @@
 #'   \item{Scores}{scores for Phase II data for the first `A` principal components}
 #'   \item{Residuals}{residuals from the model based on the first A principal components}
 #'   \item{VarScores}{eigenvalues from PCA using standardized Phase I data}
+#'   \item{Method}{method used for imputation of missing values}
 #' }
 #' @details For Phase I usage, `data2` should be equal to `data1`.
 #' Phase II data is standardized using means and variances from Phase I data.
@@ -92,7 +94,8 @@ score_imp <- function(data1 = NULL, data2, A, method = NULL, weights = NULL, eig
     stop(paste0("The number of variables in the weights matrix (",
                 nrow(weights),
                 ") is different from the number of columns in Phase II data (",
-                p, ")."))}
+                p, ")."))
+    }
 
   if (ncol(weights) < A) {
     stop(paste0("The number of components in the weights matrix (",
@@ -203,5 +206,9 @@ score_imp <- function(data1 = NULL, data2, A, method = NULL, weights = NULL, eig
     errores <- rbind(errores, t(residuo))
   }
 
-  return(list(Scores = escores, Residuals = errores, VarScores = eigen))
+  rownames(escores) <- 1:nrow(escores)
+  rownames(errores) <- 1:nrow(errores)
+
+  list(Scores = escores, Residuals = errores, VarScores = eigen, Method = method)
+
 }

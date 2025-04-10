@@ -29,6 +29,7 @@ from Principal Component Analysis, computed using standardized Phase I data.}
 \item{Scores}{scores for Phase II data for the first \code{A} principal components}
 \item{Residuals}{residuals from the model based on the first A principal components}
 \item{VarScores}{eigenvalues from PCA using standardized Phase I data}
+\item{Method}{method used for imputation of missing values}
 }
 }
 \description{

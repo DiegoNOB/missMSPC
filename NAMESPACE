@@ -3,3 +3,4 @@
 export(score_imp)
 export(spe.chart)
 export(t2.chart)
+importFrom(rlang,.data)

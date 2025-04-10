@@ -3,6 +3,7 @@
 #' This function plots the \eqn{T^2} Control Chart of PCs.
 #' It also returns the proportion of out-of-control samples and their position,
 #' along with the value of the computed Upper Control Limit.
+#'
 #' @param scores output from `score_imp()` function.
 #' @param alpha significance level used for computing the Upper Control Limit (UCL).
 #' Defaults to 0.005.
@@ -15,6 +16,7 @@
 #'   \item{poc}{Proportion of out-of-control samples}
 #'   \item{out}{ID of out-of-control samples}
 #'   \item{UCL}{Value of the Upper Control Limit}
+#'   \item{T2}{Values of the T2 statistic}
 #' }
 #'
 #' @details The computation of the Upper Control Limit (UCL)
@@ -30,6 +32,7 @@
 #'
 #' @export
 #' @seealso [score_imp()]
+#' @importFrom rlang .data
 #' @examples
 #' #Score imputation with CMR method
 #' scores <- score_imp(
@@ -56,25 +59,37 @@ t2.chart <- function(scores, alpha = 0.005, phase = 2, m) {
   }
 
   titahat <- diag(scores$VarScores[1:A])
+  titahat_inv <- solve(titahat)
   tauC <- x
 
-  salida <- NULL
-
-  for (j in 1:nrow(tauC)) {
-    filaj <- tauC[j, ]
-    estj <- filaj %*% solve(titahat) %*% matrix(filaj, ncol = 1) #T2 para cada fila
-    salida <- c(salida, estj)
+  aux1 <- function(m, inv, j) {
+    m[j, ] %*% inv %*% matrix(m[j, ], ncol = 1)
   }
+
+  salida <- purrr::map_dbl(
+    .x = 1:nrow(tauC),
+    .f = aux1,
+    inv = titahat_inv,
+    m = tauC
+    )
+
+  # salida <- NULL
+  #
+  # for (j in 1:nrow(tauC)) {
+  #   filaj <- tauC[j, ]
+  #   estj <- filaj %*% titahat_inv %*% matrix(filaj, ncol = 1) #T2 para cada fila
+  #   salida <- c(salida, estj)
+  # }
 
   y <- data.frame(orden = 1:n, t2 = salida, control = salida < UCL)
   data_texto <- data.frame(x = 1, y = UCL*1.05, label = "UCL")
 
   graf <- ggplot2::ggplot(data = y) +
-    ggplot2::aes(x = orden, y = t2) +
-    ggplot2::geom_line(size = 1) +
-    ggplot2::geom_point(ggplot2::aes(col = control), size = 2) +
+    ggplot2::aes(x = .data$orden, y = .data$t2) +
+    ggplot2::geom_line(linewidth = 1) +
+    ggplot2::geom_point(ggplot2::aes(col = .data$control), size = 2) +
     ggplot2::geom_hline(yintercept = UCL, col = "blue", linewidth = 1.2, linetype = "twodash") +
-    ggplot2::geom_text(data = data_texto, ggplot2::aes(x = x, y = y, label = label), fontface = "bold") +
+    ggplot2::geom_text(data = data_texto, ggplot2::aes(x = x, y = y, label = .data$label), fontface = "bold") +
     ggplot2::scale_color_manual(breaks = c(FALSE, TRUE),
                                 values = c("red", "black")) +
     ggplot2::ggtitle(expression(paste("T"^"2", " Control Chart"))) +
@@ -91,6 +106,6 @@ t2.chart <- function(scores, alpha = 0.005, phase = 2, m) {
   obsfc <- which(!y$control) #ID de obs fuera de control
   if (length(obsfc) == 0) {obsfc <- NULL}
 
-  return(list(Plot = graf, poc = pfc, out = obsfc, UCL = UCL))
+  list(Plot = graf, poc = pfc, out = obsfc, UCL = UCL, T2 = y$t2)
 
 }
